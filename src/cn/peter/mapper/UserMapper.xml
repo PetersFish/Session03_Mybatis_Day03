@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--映射接口 -->
+<mapper namespace="cn.peter.mapper.UserMapper">
+
+	<resultMap type="User" id="userResultMap">
+		<id column="t_id" property="id"/>
+		<result column="t_username" property="username"/>
+		<result column="t_password" property="password"/>
+	</resultMap>
+	
+	<!-- if -->
+	<select id="selectByUserIf" parameterType="User" resultMap="userResultMap">
+		select * from user where 1=1
+		<if test="username != null and username != ''">
+			and t_username=#{username}
+		</if>
+		<if test="password != null and password != ''">
+			and t_password=#{password}
+		</if>
+	</select>
+	
+	<!-- where -->
+	<select id="selectByUserWhere" parameterType="User" resultMap="userResultMap">
+		select * from user
+		<where>
+			<if test="username != null and username != ''">
+				and t_username=#{username}
+			</if>
+			<if test="password != null and password != ''">
+				and t_password=#{password}
+			</if>
+		</where>
+	</select>
+	
+	<!-- choose -->
+	<select id="selectByUserChoose" parameterType="User" resultMap="userResultMap">
+		select * from user
+		<where>
+			<choose>
+				<when test="username != null and username != ''">
+					and t_username=#{username}
+				</when>
+				<when test="password != null and password != ''">
+					and t_password=#{password}
+				</when>
+				<otherwise>
+					and 1=1
+				</otherwise>
+			</choose>
+		</where>
+	</select>
+	
+	<!-- trim -->
+	<select id="selectByUserTrim" parameterType="User" resultMap="userResultMap">
+		select * from user
+		<trim prefix="where" prefixOverrides="and|or">
+			<if test="username != null and username != ''">
+				or t_username=#{username}
+			</if>
+			<if test="password != null and password != ''">
+				or t_password=#{password}
+			</if>
+		</trim>
+	</select>
+	
+	<!-- foreach -->
+	<select id="selectByIdsForeach" parameterType="Object[]" resultMap="userResultMap">
+		select * from user where t_id in
+		<foreach collection="array" item="id" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</select>
+	
+	<!-- foreach param user-->
+	<select id="selectByIdsForeachUser" parameterType="User" resultMap="userResultMap">
+		select * from user where t_id in
+		<foreach collection="ids" item="id" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</select>
+	
+	<!-- set -->
+	<update id="updateUserSet" parameterType="User" >
+		update user
+		<set>
+			<if test="username != null and username != ''">
+				t_username=#{username},
+			</if>
+			<if test="password != null and password != ''">
+				t_password=#{password},
+			</if>
+		</set>
+		where t_id=#{id}
+	</update>
+	
+	<!-- trim update -->
+	<update id="updateUserTrim" parameterType="User" >
+		update user
+		<trim prefix="set" suffixOverrides=",">
+			<if test="username != null and username != ''">
+				t_username=#{username},
+			</if>
+			<if test="password != null and password != ''">
+				t_password=#{password},
+			</if>
+		</trim>
+		where t_id=#{id}
+	</update>
+</mapper>
